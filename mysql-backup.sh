@@ -18,6 +18,7 @@
 # @param  $baseDir      Базовый каталог, от которого считаются пути директорий
 # @param  $mysqlConfig  Конфигурационный файл с данными подключения к MySQL
 # @param  $owner        Владелец и группа, назначаемые файлу бекапа
+# @param  $daysOld      Удалять файлы бекапов старше $daysOld дней; `0` — не удалять.
 #
 # @author MaximAL
 # @date 2014-09-16
@@ -44,6 +45,9 @@ mysqlConfig='/etc/mysql/debian.cnf'
 
 # Владелец и группа, назначаемые файлу бекапа
 owner='maximal:maximal'
+
+# Удалять файлы бекапов старше $daysOld дней; 0, чтобы не удалять старые файлы.
+daysOld=0
 
 
 ####################
@@ -73,5 +77,13 @@ for dbname in `echo $query | mysql --defaults-file=$mysqlConfig --skip-column-na
 	chown  $owner  $filename
 	chmod  640  $filename
 done
+
+if [ $daysOld -gt 0 ]; then
+	echo "Удаляем файлы бекапов старше $daysOld дней…"
+	# find $baseDir -type f -name '*.sql.gz' -mtime +2 -exec echo '{}' \;
+	find $baseDir -type f -name '*.sql.gz' -mtime +$daysOld -delete
+fi
+
+
 
 echo "Готово."
