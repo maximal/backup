@@ -68,20 +68,20 @@ for dbname in `echo $query | mysql --defaults-file=$mysqlConfig --skip-column-na
 	echo "    $dbname  →  $filename"
 
 	# Создаём каталог, если его нет, и ставим ему права
-	mkdir -p $dirname
-	chown  $owner  $dirname
-	chmod  750  $dirname
+	mkdir -p "$dirname"
+	chown  "$owner"  "$dirname"
+	chmod  750  "$dirname"
 
 	# Делаем бекап и ставим файлу нужные права
-	mysqldump  --defaults-extra-file=$mysqlConfig  $dbname  |  gzip > $filename
-	chown  $owner  $filename
-	chmod  640  $filename
+	mysqldump  --defaults-extra-file="$mysqlConfig"  "$dbname"  |  gzip > "$filename"
+	chown  $owner  "$filename"
+	chmod  640  "$filename"
 done
 
 if [ $daysOld -gt 0 ]; then
 	echo "Удаляем файлы бекапов старше $daysOld дней…"
 	# find $baseDir -type f -name '*.sql.gz' -mtime +2 -exec echo '{}' \;
-	find $baseDir -type f -name '*.sql.gz' -mtime +$daysOld -delete
+	find "$baseDir" -type f -name '*.sql.gz' -mtime +$daysOld -delete
 fi
 
 
